@@ -10,6 +10,7 @@ def home():
     page = request.args.get('page', 1, type=int)
     posts = Post.query.order_by(Post.date_posted.desc()).\
         paginate(per_page=4, page=page)
+    # git
     return render_template('home.html', posts=posts, title='Main Home Page')
 
 
