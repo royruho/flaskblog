@@ -3,7 +3,7 @@ from flask import Blueprint, flash, redirect, url_for, render_template, abort, \
 from flask_login import login_required, current_user
 
 from flaskblog import db
-from flaskblog.models import Post
+from flaskblog.models import Post, User
 from flaskblog.posts.forms import PostForm
 
 posts = Blueprint('posts', __name__)
@@ -21,14 +21,16 @@ def new_post():
         flash('Post was created', 'success')
         return redirect(url_for('main.home'))
     return render_template('create_post.html', title='New Post',
-                           form=post_form, legend='New Post')
+                           form=post_form, legend='New Post',
+                           num_registered=User.get_num_registered())
 
 
 @posts.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def post(post_id):
     post_object = Post.query.get_or_404(post_id)
     return render_template('post.html', title=post_object.title,
-                           post=post_object)
+                           post=post_object,
+                           num_registered=User.get_num_registered())
 
 
 @posts.route('/post/<int:post_id>/update', methods=['GET', 'POST'])
@@ -48,7 +50,8 @@ def update_post(post_id):
         post_form.title.data = post_object.title
         post_form.content.data = post_object.content
     return render_template('create_post.html', title='Update Post',
-                           form=post_form, legend='Update Post')
+                           form=post_form, legend='Update Post',
+                           num_registered=User.get_num_registered())
 
 
 @posts.route('/post/<int:post_id>/delete', methods=['POST'])

@@ -25,7 +25,8 @@ def register():
         flash(f'Account created for {register_form.username.data}!', 'success')
         return redirect(url_for('users.login'))
     return render_template('register.html', title='Register',
-                           form=register_form)
+                           form=register_form,
+                           num_registered=User.get_num_registered())
 
 
 @users.route('/login', methods=['GET', 'POST'])
@@ -42,7 +43,8 @@ def login():
             return redirect(next_page) if next_page else redirect('home')
         else:
             flash(f'Check email or password', 'danger')
-    return render_template('login.html', title='Login', form=login_form)
+    return render_template('login.html', title='Login', form=login_form,
+                           num_registered=User.get_num_registered())
 
 
 @users.route('/logout')
@@ -72,7 +74,10 @@ def account():
     return render_template('account.html',
                            title='Account',
                            image_file=image_file,
-                           form=update_account_form)
+                           form=update_account_form,
+                           num_registered=User.get_num_registered()
+                           )
+
 
 @users.route('/user/<string:username>')
 def user_posts(username):
@@ -80,7 +85,9 @@ def user_posts(username):
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(author=user).order_by(
         Post.date_posted.desc()).paginate(per_page=4, page=page)
-    return render_template('user_posts.html', posts=posts, user=user)
+    return render_template('user_posts.html', posts=posts, user=user,
+                           num_registered=User.get_num_registered())
+
 
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
@@ -92,8 +99,11 @@ def reset_request():
         send_reset_email(user)
         flash(f'Reset password email was sent to {form.email.data}', 'info')
         return redirect(url_for('users.login'))
-    return render_template('reset_request.html', form=form, title='Reset '
-                                                                  'Password')
+    return render_template('reset_request.html',
+                           form=form,
+                           title='Reset Password',
+                           num_registered=User.get_num_registered()
+                           )
 
 
 @users.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -112,4 +122,5 @@ def reset_token(token):
         db.session.commit()
         flash(f'Password for {user.username} was updated!', 'success')
         return redirect(url_for('users.login'))
-    return render_template('reset_token.html', form=form)
+    return render_template('reset_token.html', form=form,
+                           num_registered=User.get_num_registered())

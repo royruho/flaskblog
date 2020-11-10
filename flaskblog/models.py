@@ -17,10 +17,15 @@ class User(db.Model, UserMixin):
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
+    tasks = db.relationship('Task', backref='author', lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
         return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @classmethod
+    def get_num_registered(cls):
+        return cls.query.count()
 
     @staticmethod
     def verify_reset_token(token):
@@ -45,3 +50,27 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
+
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    date_created = db.Column(db.DateTime, nullable=False,
+                             default=datetime.utcnow)
+    duration_sec = db.Column(db.Integer, nullable=False)
+    date_run = db.Column(db.DateTime, nullable=True)
+    run_status = db.Column(db.Boolean, nullable=False, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Task('{self.title}', '{self.duration_sec}',{self.run_status})"
+
+    def run_task(self):
+        if self.run_status:
+            return False
+        self.run_status = True
+        self.date_run = datetime.utcnow()
+        return True
+
+    def get_status(self):
+        return self.run_status

@@ -34,6 +34,11 @@
             <div class="navbar-nav">
                 {% if current_user.is_authenticated %}
                     <a class="nav-item nav-link" href="{{ url_for
+                    ('tasks.new_task')
+                            }}">
+                        New Task
+                    </a>
+                    <a class="nav-item nav-link" href="{{ url_for
                     ('posts.new_post')
                             }}">
                         New Post
@@ -79,13 +84,23 @@
         </div>
         <div class="col-md-4">
           <div class="content-section">
-            <h3>Our Sidebar</h3>
-            <p class='text-muted'>You can put any information here you'd like.
-              <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Posts</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light">etc</li>
+            <p>More Actions:
+              <ul class="list-group text-muted">
+                <li class="list-group-item list-group-item-light">
+                    <a class="nav-item nav-link" href="{{
+                            url_for('main.latest_posts') }}">
+                        Latest Posts
+                    </a>
+                </li>
+                {% if current_user.is_authenticated %}
+                    <li class="list-group-item list-group-item-light">
+                        <a class="nav-item nav-link" href="{{
+                                url_for('tasks.user_tasks') }}">
+                            Tasks
+                        </a>
+                    </li>
+                {% endif %}
+                Number of registered users: {{ num_registered }}
               </ul>
             </p>
           </div>
