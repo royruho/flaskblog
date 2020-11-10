@@ -1,9 +1,16 @@
 {% extends "layout.html" %}
 
 {% block content %}
-        <h3 class="mb-3"> {{ tasks.items[0].author.username }} you have [{{
-                tasks.total }}] tasks
-        </h3>
+    <div class="content-section">
+        {% if not tasks.items %}
+            <h3>You have no tasks</h3>
+        {% else %}
+            <h3 class="mb-3">
+                {{ tasks.items[0].author.username }} you have [{{ tasks.total }}] tasks
+            </h3>
+        {% endif %}
+    </div>
+
         {%  for task in tasks.items %}
             <article class="media content-section">
             <img class="rounded-circle article-img"

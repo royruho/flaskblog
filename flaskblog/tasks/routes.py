@@ -31,7 +31,7 @@ def new_task():
         db.session.add(task_object)
         db.session.commit()
         flash('Task was created', 'success')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('tasks.user_tasks'))
     return render_template('create_task.html', title='New Task',
                            form=form, legend='New Task',
                            num_registered=User.get_num_registered())
