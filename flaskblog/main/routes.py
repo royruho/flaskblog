@@ -20,10 +20,12 @@ def about():
     abouts = [
         {
             'author': 'Roy Ruach',
-            'title': 'FlaskBlog home page',
+            'title': 'Blog and Reminders home page',
             'content': 'This page was created by Roy Ruach using python and '
                        'flask.\nThe site was created in assistance with Corey '
-                       'Schafer Youtube flask tutorial.',
+                       'Schafer Youtube flask tutorial.\nUsing this page you '
+                       'can register with your email and send yourself future'
+                       ' notifications via E-mail',
             'date_posted': 'October 26, 2020'
         }
     ]

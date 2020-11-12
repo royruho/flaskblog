@@ -5,11 +5,11 @@
         {% if title=='Latest Posts' %}
             <h3> {{ title }}</h3>
         {% endif %}
-         <p>Roy Ruach FlaskBlog implementation</p>
+         <p>Roy Ruach Blogging and Email-Remainders page</p>
             {% if not current_user.is_authenticated %}
                 <p class="text-left text-muted">You are not logged in. Login or
                     Register to write
-                    posts</p>
+                    posts or send your self future email with reminders</p>
             {% endif %}
      </div>
     {%  for post in posts.items %}

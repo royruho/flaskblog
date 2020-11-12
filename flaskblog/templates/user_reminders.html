@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="content-section">
+        {% if not reminders.items %}
+            <h3>You have no reminders</h3>
+        {% else %}
+            <h3 class="mb-3">
+                {{ reminders.items[0].author.username }} you have [{{ reminders.total }}] reminders
+            </h3>
+        {% endif %}
+    </div>
+
+        {%  for reminder in reminders.items %}
+            <article class="media content-section bg-light">
+            <img class="rounded-circle article-img"
+                 src="{{ url_for('static',filename='profile_pics/' +
+                 reminder.author.image_file) }}">
+                <div class="media-body mb-0">
+                    <div class="article-metadata">
+                        <a class="mr-2" href={{ url_for('remainders.user_reminders',
+                            username=reminder.author.username) }}>
+                        {{ reminder.author.username }}
+                        </a>
+                        <small class="text-muted">
+                        created at: {{ reminder.date_created.strftime('%Y-%m-%d') }}
+                        </small>
+                        <a class="mr-2" href={{ url_for('remainders.reminder',
+                            reminder_id=reminder.id) }}>
+                            Edit
+                        </a>
+                        {% if reminder.run_status %}
+                            <small class="text-success">
+                                already submitted
+                            </small>
+                        {% else %}
+                            <small class="text-danger">
+                                This reminder was not submitted yet!
+                            </small>
+                        {% endif %}
+                    </div>
+                    <p><a class="article-title" href="{{url_for('remainders.reminder',
+                            reminder_id=reminder.id) }}">
+                        title: {{ reminder.title }}
+                    </a></p>
+                    <p class="article-title">
+                        {% if reminder.run_status and reminder.date_run %}
+                                Reminder submitted on
+                            {{ reminder.date_run.strftime('%Y-%m-%d, %H:%M') }}
+                        {% endif %}
+                    </p>
+                    <p class="article-title">
+                        reminder delay in seconds: {{ reminder.duration_sec }}
+                    </p>
+                </div>
+            </article>
+        {% endfor %}
+        {%  for page_num in reminders.iter_pages(left_edge=1, right_edge=1,
+        left_current=1, right_current=3) %}
+            {% if page_num %}
+                {% if reminders.page == page_num %}
+                    <a class="btn btn-info mb-4" href="{{ url_for
+                    ('remainders.user_reminders', username=user.username,
+                        page=page_num) }}"> {{ page_num }}
+                    </a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for
+                    ('remainders.user_reminders', username=user.username,
+                        page=page_num) }}"> {{ page_num }}
+                    </a>
+                    {% endif %}
+            {% else %}
+            {% endif %}
+        {% endfor %}
+
+{% endblock content %}

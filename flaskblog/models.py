@@ -1,8 +1,10 @@
+import time
 from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData
 from flask import current_app
 from flask_login import UserMixin
 from flaskblog import db, login_manager
+from flaskblog.remainders import utils
 
 
 @login_manager.user_loader
@@ -17,7 +19,7 @@ class User(db.Model, UserMixin):
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
-    tasks = db.relationship('Task', backref='author', lazy=True)
+    reminders = db.relationship('Reminder', backref='author', lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
@@ -52,7 +54,7 @@ class Post(db.Model):
         return f"Post('{self.title}', '{self.date_posted}')"
 
 
-class Task(db.Model):
+class Reminder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False,
@@ -63,11 +65,18 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f"Task('{self.title}', '{self.duration_sec}',{self.run_status})"
+        return f"Reminder('{self.title}', '{self.duration_sec}',{self.run_status})"
 
-    def run_task(self):
+    def __call__(self, *args, **kwargs):
+        time.sleep(self.duration_sec)
+        print(f'reminder {self} was called')
+        return self.__repr__()
+
+    def set_reminder(self):
         if self.run_status:
             return False
+        print(f"run_reminder user: {User.query.filter_by(id=self.user_id).first()}")
+        utils.async_run_reminder(self, User.query.filter_by(id=self.user_id).first())
         self.run_status = True
         self.date_run = datetime.utcnow()
         return True
